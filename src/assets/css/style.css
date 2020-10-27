@@ -1,0 +1,40 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.container {
+  max-width: 960px;
+}
+
+.logo {
+  width: 50px;
+}
+
+.webauth-header {
+  max-width: 700px;
+}
+
+.cookie-alert {
+  bottom: 0;
+  left: 0;
+  margin-bottom: 0;
+  padding-bottom: 40px;
+  padding-top: 40px;
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+}
+
+.cookie-alert-hidden {
+  display: none;
+}
+
+.code-toolbar {
+  font-size: 0.8rem;
+}

@@ -1,0 +1,92 @@
+@@include('./includes/header.html')
+
+<div class="container">
+    <div class="pt-2 my-md-2 pt-md-4">
+        <h3 class="mb-4">Glossary</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Term</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">Assertion</th>
+                <td>Verification of a signature against an existing credential</td>
+            </tr>
+            <tr>
+                <th scope="row">Attestation</th>
+                <td>Creation and declaration of a new credential</td>
+            </tr>
+            <tr>
+                <th scope="row">Authenticator</th>
+                <td>The device through which authentication occurs, typically a Platform authenticator (mobile device) or external security key</td>
+            </tr>
+            <tr>
+                <th scope="row">Authorization gesture</th>
+                <td>A physical interaction with an authenticator, for example touch of a finger, or scan of a face.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>Base64URL</code></th>
+                <td>Modification of the main <code>Base64</code> standard supporting use in URL addresses.</td>
+            </tr>
+            <tr>
+                <th scope="row">Biometric</th>
+                <td>A physical characteristic such as fingerprint or facial appearance</td>
+            </tr>
+            <tr>
+                <th scope="row">CBOR</th>
+                <td>Concise Binary Object Representation.</td>
+            </tr>
+            <tr>
+                <th scope="row">Challenge</th>
+                <td>Random set of bits used to prevent replay attacks.</td>
+            </tr>
+            <tr>
+                <th scope="row">COSE</th>
+                <td>CBOR Object Signing and Encryption. Find a list of numeric identifiers (such as <code>-7</code>, <code>-257</code> etc) and algorithms <a href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms" target="_blank">here</a>.</td>
+            </tr>
+            <tr>
+                <th scope="row">CTAP</th>
+                <td>Client to Authenticator Protocol</td>
+            </tr>
+            <tr>
+                <th scope="row">Credential</th>
+                <td>Contains a challenge, public key, and meta data about the credential.</td>
+            </tr>
+            <tr>
+                <th scope="row">Private key</th>
+                <td>Matches to the corresponding public key</td>
+            </tr>
+            <tr>
+                <th scope="row">Public key</th>
+                <td>Matches to the corresponding private key</td>
+            </tr>
+            <tr>
+                <th scope="row">Relying Party</th>
+                <td>A website offering Web Authentication integration</td>
+            </tr>
+            <tr>
+                <th scope="row">Replay attack</th>
+                <td>Also known as playback attack. A form of network attack in which data transmission is maliciously or fraudulently repeated or delayed. This is the reason challenges are required in Web Authentication.</td>
+            </tr>
+            <tr>
+                <th scope="row">Transports</th>
+                <td>The method through which credentials are transported from the authenticator such as <code>platform</code> (built-in device), <code>usb</code>, <code>ble</code> (bluetooth) and <code>nfc</code></td>
+            </tr>
+            <tr>
+                <th scope="row"><code>Uint8Array</code></th>
+                <td>A Javascript object representation</td>
+            </tr>
+            <tr>
+                <th scope="row">UV</th>
+                <td>User verification - an action such as providing a fingerprint or looking into a camera for facial recognition</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>Also see the <a href="https://www.w3.org/TR/webauthn/#terminology" target="_blank">official spec</a> for some additional terms & definitions.</p>
+    </div>
+</div>
+
+@@include('./includes/footer.html')

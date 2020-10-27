@@ -1,0 +1,260 @@
+@@include('./includes/header.html')
+
+<div class="container">
+    <div class="pt-2 my-md-2 pt-md-4">
+        <h3 class="mb-4">Technical overview & Get started</h3>
+        <h5>Process overview</h5>
+        <ul>
+            <li>There are two key steps in the process - <span class="font-weight-bold">attestation</span> (creation and registration of credentials) and <span class="font-weight-bold">assertion</span> (authentication against existing credentials).</li>
+            <li>Both steps required both front-end and back-end code to work successfully.</li>
+            <li>The browser handles communication with the native operating system for user verification - that is, requesting the fingerprint or facial recognition.</li>
+            <li>The browser will provide you with a public key credential that you need to store and verify against in future.</li>
+        </ul>
+
+        <hr class="my-4">
+
+        <div class="alert alert-warning">This page contains pseudo-code examples. The general concepts are covered however there are several gaps that you will need to fill for your specific implementation.</div>
+
+        <h5>1) Attestation - server-side part 1</h5>
+        <ul>
+            <li>Generate challenge - this should be an array of random numbers (bits).</li>
+            <li>Specify the encryption algorithms you support. These need to also be supported on the device. Commonly used is ECDSA w/ SHA-256, also known as ES256, which has the numeric identifier <code>-7</code>. See <a href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms" target="_blank">this list</a> for all available options.</li>
+            <li>Specify the authenticators you prefer - e.g. <code>platform</code> for iOS and Android. Note that browser / OS may choose to ignore this.</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-php">
+                $user = new User($userId)
+                $challenge = array_slice(shuffle(range(1, 255)),0,64); // 64 random ints between 1 and 255
+                $user->saveChallenge($challenge);
+
+                return [
+                    "challenge" => $challenge,
+                    "rp" => [
+                        "name" => "Your website",
+                        "id" => "example.com",
+                    ],
+                    "user" => [
+                        "id" => $user->getUuid(),
+                        "name" => $user->getName(),
+                        "displayName" => $user->getDisplayName(),
+                    ],
+                    "pubKeyCredParams" => [
+                        ["alg" => -7, "type" => "public-key"],
+                        ["alg" => -257, "type" => "public-key"],
+                    ],
+                    "authenticatorSelection" => [
+                        "authenticatorAttachment" => "platform"
+                    ],
+                    "timeout" => 30000,
+                    "attestation" => "direct"
+                ];
+            </code></pre>
+        </div>
+
+
+        <h5>2) Attestation - front-end</h5>
+        <ul>
+            <li>Requires HTTPS</li>
+            <li>Browser interfaces with the OS for the authorization gesture</li>
+            <li>You need to convert server strings to <code>Uint8Array</code> values</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-js">
+                var options = api.request('/get-attestation-options?userId=789');
+
+                // you will need to convert the challenge from a string to a byte array
+                options.challenge = Uint8Array.from(options.challenge);
+                options.user.id = Uint8Array.from(options.user.id, c => c.charCodeAt(0));
+
+                const credential = await navigator.credentials.create({
+                    publicKey: options
+                })
+
+                // base64Url encode the credential before sending
+                credential = window.prepareCredentialForApi(credential);
+
+                api.request('/save-credential?userId=789', credential);
+            </code></pre>
+        </div>
+
+
+        <h5>3) Attestation - server-side part 2</h5>
+        <ul>
+            <li>Verify domain in credential matches expected domain</li>
+            <li>You need to do encoding and decoding from CBOR and Base64URL formats</li>
+            <li>Store public key associated with a user (note: could be many public keys)</li>
+            <li>It is highly recommended to use one or more libraries for server-side credential parsing</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-php">
+                $user = new User($userId);
+                $credential = $requestBody['credential'];
+
+                if ($credential->challenge == $user->getChallenge()) {
+                    // you now need to be able to parse out values from the credential
+                    // you will need to use libraries to decode CBOR and handle COSE keys
+                    // before proceeding you also need to carry out other checks such as:
+                    // credential type is webauthn.create
+                    // the relying party ID in the credential matches the expected domain
+                    // the user verified to create the credential
+                    // the credential ID does not already exist in your database
+
+                    $user->clearChallenge();
+                    $user->addCredential($credential);
+
+                    return ['success'];
+                }
+            </code></pre>
+        </div>
+
+        <hr class="my-4">
+
+        <h5>4) Assertion - server-side part 1</h5>
+        <ul>
+            <li>Load public key (return as allowCredentials)</li>
+            <li>Specify <code>internal</code> transport for in-built device keys e.g. iOS and Android</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-php">
+                $user = new User($userId);
+                $challenge = array_slice(shuffle(range(1, 255)),0,64); // 64 random ints between 1 and 255
+                $user->setChallenge($challenge);
+
+                $allowCredentials = [];
+
+                foreach($user->getCredentials() as $credential) {
+                    $allowCredentials[] = [
+                        "id" => $credential->getId(),
+                        "type" => "public-key",
+                        "transports" => ["internal"]
+                    ]
+                }
+
+                return [
+                    "challenge" => $challenge,
+                    "allowCredentials" => $allowCredentials,
+                    "timeout" => 60000,
+                ]
+            </code></pre>
+        </div>
+
+
+        <h5>5) Assertion - front-end</h5>
+        <ul>
+            <li>Pass in the options the browser should check for. This may contain several credentials if e.g. the user has registered multiple devices.</li>
+            <li>You need to use a <a href="https://github.com/herrjemand/Base64URL-ArrayBuffer" target="_blank">Base64URL library</a> to decode data in a suitable format for existing credential IDs.</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-js">
+                var options = api.request('/get-assertion-options?userId=789');
+
+                // you will need to convert these values from a string to a byte array
+                options.challenge = Uint8Array.from(options.challenge);
+                options.allowCredentials.forEach(element => element.id = new Uint8Array(window.base64url.decode(element.id)));
+
+                const credential = await navigator.credentials.get({
+                    publicKey: options
+                });
+
+                // base64Url encode the credential before sending
+                credential = window.prepareCredentialForApi(credential);
+
+                api.request('/verify-credential?userId=789', credential);
+            </code></pre>
+        </div>
+
+        <h5>6) Assertion - server-side part 2</h5>
+        <ul>
+            <li>This is the most complex part.</li>
+            <li>Verify public key against stored key using e.g. OpenSSL.</li>
+            <li>You need to be able to verify keys with the range of algorithms you originally specified when the credential was created, as the device may have used any one of those algorithms.</li>
+            <li>Then handle as a successful authentication - e.g. generate and return a JWT</li>
+            <li>It is highly recommended to use one or more libraries for server-side credential parsing</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-php">
+                $user = new User($userID)
+                $challengeMatches = ($user->getChallenge() == $credential->challenge);
+
+                // you need to again be able to parse out values from the credential
+                // you will need to use libraries to decode CBOR and handle COSE keys
+                $dataToVerify = // parse this out from the data in the credential
+                $signature = // parse this out from the data in the credential
+                $keyMatches = openssl_verify($dataToVerify, $signature, $user->getCredential($credential->id));
+
+                if($challengeMatches && $keyMatches) {
+                    $user->clearChallenge();
+                    return ['success'];
+                }
+
+            </code></pre>
+        </div>
+
+        <h5>Front-end - preparing credentials for the API</h5>
+        <ul>
+            <li>You can use this function to prepare a credential received from the browser for submitting to an API.</li>
+            <li>You need to use a <a href="https://github.com/herrjemand/Base64URL-ArrayBuffer" target="_blank">Base64URL library</a> to encode data in a suitable format for sending to your API.</li>
+        </ul>
+        <div class="mb-5">
+            <pre><code class="language-javascript">
+                prepareCredentialForApi: async function(credential) {
+                    const publicKeyCredential = {
+                        id: credential.id,
+                        type: credential.type,
+                        rawId: window.base64url.encode(new Uint8Array(credential.rawId)),
+                        response: {
+                            clientDataJSON: window.base64url.encode(
+                                new Uint8Array(credential.response.clientDataJSON)
+                            ),
+                        },
+                    };
+
+                    if (credential.response.attestationObject !== undefined) {
+                        publicKeyCredential.response.attestationObject = window.base64url.encode(
+                            new Uint8Array(credential.response.attestationObject)
+                        );
+                    }
+
+                    if (credential.response.authenticatorData !== undefined) {
+                        publicKeyCredential.response.authenticatorData = window.base64url.encode(
+                            new Uint8Array(credential.response.authenticatorData)
+                        );
+                    }
+
+                    if (credential.response.signature !== undefined) {
+                        publicKeyCredential.response.signature = window.base64url.encode(
+                            new Uint8Array(credential.response.signature)
+                        );
+                    }
+
+                    if (credential.response.userHandle !== undefined) {
+                        publicKeyCredential.response.userHandle = window.base64url.encode(
+                            new Uint8Array(credential.response.userHandle)
+                        );
+                    }
+
+                    return publicKeyCredential;
+                }
+            </code></pre>
+        </div>
+
+        <hr class="my-4">
+
+        <h5>Browser support</h5>
+        <p>Web Authentication is widely supported on modern Android and iOS devices. See <a href="https://caniuse.com/#search=webauthn" target="_blank">Can I use - Webauthn</a>, <a href="https://caniuse.com/#search=credential-management" target="_blank">Can I use - Credenial Management</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API" target="_blank">MDN Browser compatibility</a> for more details on browser support.</p>
+        <p>Important notes:</p>
+        <ul>
+            <li>Some browser support sites list functionality as fully supported (particularly from iOS 13.3) - however this is not the full picture, as only cross-platform <code>authenticatorAttachments</code> were supported - meaning external security keys. Platform authenticators - meaning use of the iPhone device itself as an authenticator - was only supported from iOS 14.</li>
+            <li>Certain mobile vendors include their own browsers, such as the Samsung browser. We have not yet verified support in this browser.</li>
+        </ul>
+
+        <hr class="my-4">
+
+        <h5>An easier way</h5>
+        <p>If you are interested in trying out Web Authentication, the information and code samples on this site and others should give you plenty of direction to get started with. However, there is no doubt it is a complex process - in order to process the credentials your front-end will generate, you need complex server-side code to parse and verify them. However, there are tools available to help with this!</p>
+        <p><a href="https://presence.mioko.tech" target="_blank">Presence</a> is a cloud tool that is offers a ready-made Web Authentication sandbox for use in your applications and prototypes. With this tool you will receive an API key which you can use to submit and verify credentials in minutes.</p>
+        <p><a href="https://presence.mioko.tech" target="_blank">Learn more about Presence</a> - including a free trial without requiring card details.</p>
+    </div>
+</div>
+
+@@include('./includes/footer.html')

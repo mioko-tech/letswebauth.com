@@ -1,0 +1,52 @@
+@@include('./includes/header.html')
+
+<div class="webauth-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <p class="lead text-muted">Web Authentication (WebAuthn) is a new open technology that allows users to quickly, securely and easily
+        log in to your website using biometrics such as fingerprint or face identification. Supported on all modern Android and iOS devices, we are encouraging it's use
+        and are helping developers around the world to learn more about it!</p>
+    <p>
+        <a href="what-is-it.html" class="btn btn-primary my-2">What is Web Authentication?</a>
+        <a href="technical-overview-get-started.html" class="btn btn-secondary my-2">Show me the detail!</a>
+    </p>
+</div>
+
+<div class="container">
+    <div class="pt-4 pt-md-5 border-top">
+        <p>As of September 2020 it is realistic and acheivable to allow the vast majority of mobile web users to sign into your
+            website using biometrics (fingerprint and face identification).</p>
+        <p>
+          <span class="font-weight-bold">Key points:</span>
+        </p>
+        <ul>
+            <li>Web Authentication is available on both Android and iOS, meaning it's available for up to 99% of mobile users[1] and widespread adoption. This website is particularly focused on the platform authentication application of Web Authentication to fit with this.</li>
+            <li>Biometrics always stay on the user's device</li>
+            <li>Encrypted keys are used to exchange information with the server.</li>
+        </ul>
+        <p>
+            <a href="technical-overview-get-started.html">Read more about the technical detail</a>
+        </p>
+        <p>
+            <span class="font-weight-bold">Official specification:</span>
+        </p>
+        <ul>
+            <li>The Web Authentication specification became a W3C Recommendation on 4th March 2019.</li>
+            <li>Read the <a href="https://www.w3.org/TR/webauthn/" target="_blank">Level 1 specification</a>.</li>
+            <li>Read the <a href="https://w3c.github.io/webauthn/" target="_blank">latest draft specification</a>.</li>
+        </ul>
+        <p>
+            <span class="font-weight-bold">Get started:</span>
+        </p>
+        <ul>
+            <li>Why not try it for yourself? Getting started can be as simple as a Javascript call to <code>navigator.credentials.create(...)</code>, head on over to the <a href="technical-overview-get-started.html">Get Started</a> page for code examples.</li>
+        </ul>
+        <hr>
+        <p>
+            <span class="font-weight-bold">Sources</span>
+        </p>
+        <ul>
+            <li>[1] <a href="https://gs.statcounter.com/os-market-share/mobile/worldwide" target="_blank">Statcounter</a></li>
+        </ul>
+    </div>
+</div>
+
+@@include('./includes/footer.html')

@@ -1,0 +1,4 @@
+.idea/
+bitbucket-pipelines.yml
+dist/
+node_modules/

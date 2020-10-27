@@ -1,0 +1,55 @@
+@@include('./includes/header.html')
+
+<div class="container">
+    <div class="pt-2 my-md-2 pt-md-4">
+        <h3 class="mb-4">What is Web Authentication?</h3>
+        <p>Web Authentication (WebAuthn) is a new open technology that allows users to quickly, securely and easily login to your website using biometrics such as fingerprint or face identification. Javascript is run in device web browsers that accesses native functionality to create and retrieve public key credentials that can be used to associate and authenticate a device with a user account in a web application.</p>
+        <p>It became a W3C Recommendation in March 2019 and as of September 2020 is supported on both iOS and Android for use of the device as a native (platform) authenticator, as well as external security key devices (External authenticator) such as Yubikey.</p>
+        <hr>
+        <p>When using native authenticators it looks like this on Android and iOS:</p>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="assets/images/webauth-mockup-android.png" alt="Webauth Android" style="max-height: 450px;">
+                    <div class="caption">
+                        <p>Android</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="assets/images/webauth-mockup-iphone.png" alt="Webauth iOS" style="max-height: 450px;">
+                    <div class="caption">
+                        <p>iOS</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>Note: Please <a href="https://github.com/mioko-tech/letswebauth.com/issues" target="_blank">let us know</a> if it looks different on your device as we are building up this documentation!</p>
+        <hr>
+        <h4>FAQs</h4>
+        <p>
+            <span class="font-weight-bold">How secure is it?</span><br />
+            The user's device acts as an authenticator that generates a public key from a range of supported encryption algorithms, commonly ECDSA-256. This is much more secure than a traditional password. Additionally, unlike a password, the private key never leaves the user's device, meaning the website does not store the credential required to authenticate an account. This means if a database was exposed, attackers would not be able to use the credentials in the database to gain unauthorised access. This means the technology is phishing-resistant.<br /><br />
+            <span class="font-weight-bold">Does the web application (Relying Party) store biometric information?</span><br />
+            No. Biometric information remains on the user's device, where it is used to generate public keys, and only the public key is sent to and stored by the website.<br /><br />
+            <span class="font-weight-bold">Do devices need to be registered individually?</span><br />
+            Yes, credentials only tie a single device to a user account for a single domain. Therefore if a user was to use Web Authentication to access an account from multiple devices, each device would need to register a credential.<br /><br />
+            <span class="font-weight-bold">What about lost / inaccessible devices?</span><br />
+            If the device is lost or innaccessible then access through that credential will be lost. Users will always need to have another alternative way to access their account, e.g. through a trusted email address, password or recovery code.<br /><br />
+            <span class="font-weight-bold">Is use of biometrics mandatory?</span><br />
+            No. When handling Web Authentication requests, devices often also present users with the option to access credentials via an existing PIN or password set up on their device.<br /><br />
+            <span class="font-weight-bold">What about existing passwords? Should this be used in addition to passwords, or instead of them?</span><br />
+            In most cases you will still need to retain a password and/or recovery code for the foreseeable future. This is particularly the case in the event a user loses access to their device - they need a way to reset their access.<br /><br />
+            <span class="font-weight-bold">How does Web Authentication fit with MFA?</span><br />
+            Web Authentication can work as additional factor, i.e. Something the user knows - a password, something the user has - their device, and something the user is - their biometric.<br /><br />
+            <span class="font-weight-bold">Does this work for native apps?</span><br />
+            No, Web Authentication is intended for use through web browsers.<br /><br />
+            <span class="font-weight-bold">What is the future of Web Authentication?</span><br />
+            There are still many UX and user education challenges to solve that will likely take many years to reach widespread adoption.<br /><br />
+        </p>
+    </div>
+</div>
+
+@@include('./includes/footer.html')

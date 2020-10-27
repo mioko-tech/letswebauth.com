@@ -1,0 +1,46 @@
+@@include('./includes/header.html')
+
+<div class="container">
+    <div class="pt-2 my-md-2 pt-md-4">
+        <h3 class="mb-4">Cookie use</h3>
+        <p>This site uses Google Analytics for usage tracking and metrics. As per the <a href="https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage" target="_blank">official documentation</a>, the following cookies are used.</p>
+        <table class="table pt-4">
+            <thead>
+            <tr>
+                <th scope="col">Cookie Name</th>
+                <th scope="col">Expiration Time</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>_ga</td>
+                <td>2 years</td>
+                <td>Used to distinguish users.</td>
+            </tr>
+            <tr>
+                <td>_gid</td>
+                <td>24 hours</td>
+                <td>Used to distinguish users.</td>
+            </tr>
+            <tr>
+                <td>_gat</td>
+                <td>1 minute</td>
+                <td>Used to throttle request rate. If Google Analytics is deployed via Google Tag Manager, this cookie will be named _dc_gtm_&lt;property-id&gt;.</td>
+            </tr>
+            <tr>
+                <td>AMP_TOKEN</td>
+                <td>30 seconds to 1 year</td>
+                <td>Contains a token that can be used to retrieve a Client ID from AMP Client ID service. Other possible values indicate opt-out, inflight request or an error retrieving a Client ID from AMP Client ID service.</td>
+            </tr>
+            <tr>
+                <td>_gac_&lt;property-id&gt;</td>
+                <td>90 days</td>
+                <td>Contains campaign related information for the user.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@@include('./includes/footer.html')
